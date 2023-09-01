@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图书管理</title>
+    <base th:href="@{/}">
+    <link rel="stylesheet" href="static/css/minireset.css" />
+    <link rel="stylesheet" href="static/css/common.css" />
+    <link rel="stylesheet" href="static/css/cart.css" />
+    <link rel="stylesheet" href="static/css/bookManger.css" />
+    <link rel="stylesheet" href="static/css/iconfont.css" />
+    <link rel="stylesheet" href="static/css/index.css" />
+    <link rel="stylesheet" href="static/css/swiper.min.css" />
+    <link rel="stylesheet" href="static/css/set.css">
+    <script src="static/script/vue.js"></script>
+    <script src="static/script/axios.js"></script>
+    <style>
+        .form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid black;
+        }
+        .popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            padding: 20px;
+            background-color: #f2f2f2;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            display: none;
+        }
+        .Bottom {
+            position: absolute;
+            top: 85%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .popup textarea {
+            width: 100%;
+            height: 200px;
+            resize: none;
+            border: none;
+        }
+        .close {
+            position: absolute;
+            top: 6px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .put {
+            position: absolute;
+            bottom: 3px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 8px;
+            height: 18px;
+            color: #07c160;
+        }
+    </style>
+
+</head>
+<body>
+<div th:include="common/head::header"></div>
+
+
+<div id="p101">
+    <div class="header w">
+        <div id="login_header">
+            <img class="logo_img" alt="" style="width: 320px;" src="static/img/校徽.png" />
+        </div>
+        <div class="header-nav">
+            <h1 style="font-size :50px ;font-family:'宋体'">问 题 反 馈</h1><br>
+        </div>
+        <form th:action="@{/searchSubmitFeedback/1}" method="get" >
+            <div class="header-search">
+                <input  type="text" name="feedbackInfo"/>
+                <select name="searchType" style="height: 50px ;width: 50px;">
+                    <option value="informationSearch" >反馈信息搜索</option>
+                    <option value="noneHandle" >未处理反馈</option>
+                    <option value="noneHandleSearch" >未处理反馈搜索</option>
+                </select>
+                <button class="iconfont icon-search"></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="list" >
+    <div class="w">
+        <div class="add">
+            <a th:href="@{/toSubmitFeedbackPage}" >提交反馈</a>
+        </div>
+        <table >
+            <thead>
+            <tr>
+                <th>反馈类型</th>
+                <th>反馈时间</th>
+                <th>答复时间</th>
+                <th>反馈信息</th>
+                <th>处理状态</th>
+                <th>答复信息</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="feedback: ${feedbacks}">
+                <td th:if="${feedback.type}==0">
+                    系统错误
+                </td>
+
+                <td th:if="${feedback.type}==1">
+                    书籍信息错误
+                </td>
+                <td th:if="${feedback.type}==2">
+                    其他错误
+                </td>
+                <td th:text="${feedback.date}"></td>
+                <td th:text="${feedback.responseTime==null?'暂无答复':feedback.responseTime}"></td>
+                <td><a href="#" th:data="*{feedback.feedbackInfo}" th:onclick="togglePopup(this.getAttribute('data'))">点击查看反馈内容</a></td>
+                <td>
+                    <scan th:if="${feedback.status}==0" style="color: red">待处理</scan>
+                    <scan th:if="${feedback.status}==1">已处理</scan>
+                </td>
+                <td th:if="${feedback.responseInfo}==null"><scan style="color: red">暂无答复</scan></td>
+                <td th:if="${feedback.responseInfo}!=null"><a href="#" th:resp="*{feedback.responseInfo}"
+                                                              th:onclick="togglePopup(this.getAttribute('resp'))">点击查看答复信息</a></td>
+                <!--restful风格，通过超链接调用js函数，转而调用表单提交操作的类型。
+                但是js代码中不同区块的id不能相同，所以使用书本的id作为Thymeleaf渲染出的表格id，
+                因为存在修改和删除两个，所以以负的书本id作为其表格id
+                麻烦，不如直接超链接提交-->
+            </tr>
+            </tbody>
+        </table>
+
+        <div id="popup" class="popup">
+            <textarea id="text" placeholder="Reply information..." style="color: red;opacity: 1" readonly></textarea>
+            <span class="close" onclick="togglePopup(1)">&times;</span>
+        </div>
+
+        <img src="static/img/搜索结果.png"   th:if="${feedbacks.total==0}">
+        <div class="footer-right" th:if="${feedbacks.total!=0}">
+            [(${pageInfo})]
+        </div>
+    </div>
+</div>
+
+<div th:if="${feedbacks.total!=0}" class="Bottom">
+    <div th:include="common/tail::tailer"></div>
+</div>
+<div th:if="${feedbacks.total==0}" >
+    <div th:include="common/tail::tailer"></div>
+</div>
+</body>
+<script>
+
+    function togglePopup(text) {
+        event.preventDefault();
+        var popup = document.getElementById("popup");
+        var textarea = document.getElementById("text");
+        textarea.value=text;
+        popup.style.display = (popup.style.display === "block") ? "none" : "block";
+    }
+
+    new Vue({
+        el:"#p101",
+        data:{
+
+        },
+        methods:{
+            formRedirect1:function (id){
+                event.preventDefault();
+                let elementById = document.getElementById(id);
+                elementById.submit();
+            }
+        }
+    })
+</script>
+</html>
+

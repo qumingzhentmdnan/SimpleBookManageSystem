@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+<!--    只扫描Controller层-->
+    <context:component-scan base-package="com.fjut.controller">
+    </context:component-scan>
+
+    <!-- 配置Thymeleaf视图解析器 -->
+    <bean id="viewResolver" class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+        <property name="order" value="1"/>
+        <property name="characterEncoding" value="UTF-8"/>
+        <property name="templateEngine">
+            <bean class="org.thymeleaf.spring5.SpringTemplateEngine">
+                <property name="templateResolver">
+                    <bean class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+
+                        <!-- 视图前缀 -->
+                        <property name="prefix" value="/WEB-INF/pages/"/>
+
+                        <!-- 视图后缀 -->
+                        <property name="suffix" value=".html"/>
+                        <property name="templateMode" value="HTML5"/>
+                        <property name="characterEncoding" value="UTF-8" />
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!--设置上传配置，需要导入对应jar包
+        在SpringMVC的配置文件中添加配置：
+       必须通过文件解析器的解析才能将文件转换为MultipartFile对象
+       id必须为multipartResolver-->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <!--设总上传的文件大小,不设置默认为-1，即不存在上限-->
+<!--        <property name="maxUploadSize" value="1024"></property>-->
+        <!--设置上传单个文件的大小，单位是字节-->
+        <property name="maxUploadSizePerFile" value="3048576"></property>
+    </bean>
+
+
+
+    <!--装配视图控制器【view-controller】，用于页面跳转-->
+    <!--<mvc:view-controller path="/" view-name="tologin"></mvc:view-controller>-->
+
+    <!--处理静态资源，例如html、js、css、jpg，若只设置该标签，则只能访问静态资源，其他请求则无法访问
+      此时必须设置<mvc:annotation-driven/>解决问题-->
+    <mvc:default-servlet-handler/>
+
+    <!-- 开启mvc注解驱动 -->
+    <mvc:annotation-driven> </mvc:annotation-driven>
+</beans>
+
+<!--文件命名为springmvc.xml-->

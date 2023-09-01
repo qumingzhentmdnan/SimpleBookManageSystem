@@ -1,0 +1,11 @@
+.menu {
+    display: none;
+    position: absolute;
+    left:93%;
+    top:10%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    padding: 4px;
+    width: 60px;
+}

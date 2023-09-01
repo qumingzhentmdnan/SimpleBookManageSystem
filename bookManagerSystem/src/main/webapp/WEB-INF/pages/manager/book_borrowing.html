@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>已借阅书籍</title>
+  <base th:href="@{/}">
+  <link rel="stylesheet" href="static/css/minireset.css" />
+  <link rel="stylesheet" href="static/css/common.css" />
+  <link rel="stylesheet" href="static/css/cart.css" />
+  <link rel="stylesheet" href="static/css/bookManger.css" />
+  <link rel="stylesheet" href="static/css/iconfont.css" />
+  <link rel="stylesheet" href="static/css/index.css" />
+  <link rel="stylesheet" href="static/css/swiper.min.css" />
+  <link rel="stylesheet" href="static/css/set.css">
+  <script src="static/script/vue.js"></script>
+</head>
+<body>
+<div th:include="common/head::header"></div>
+
+<div id="p101">
+  <div class="header w">
+    <div id="login_header">
+      <img class="logo_img" alt="" style="width: 320px;" src="static/img/校徽.png" />
+    </div>
+    <div class="header-nav">
+      <h1 style="font-size :50px ;font-family:'宋体'">已 借 阅 书 籍</h1><br>
+    </div>
+
+    <form th:action="@{/searchBorrowingBook/1}" method="get">
+      <div class="header-search">
+        <input  type="text" name="Info"/>
+        <select name="searchType" style="height: 50px ;width: 50px;">
+          <option value="name"  selected>书名搜索</option>
+          <option value="order" >订单号搜索</option>
+          <option value="noReturn" >未归还书籍</option>
+        </select>
+        <button class="iconfont icon-search"></button>
+      </div>
+    </form>
+  </div>
+
+  <div class="list" >
+    <div class="w">
+      <table >
+        <thead>
+        <tr>
+          <th>书名</th>
+          <th>订单号</th>
+          <th>借阅日期</th>
+          <th>借阅截止</th>
+          <th>剩余借阅时长</th>
+          <th>借阅状态</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="borrowingBook: ${borrowingBooks}">
+          <td th:text="${borrowingBook.bookName}"></td>
+          <td th:text="${borrowingBook.sequence}">活着</td>
+          <td th:text="${borrowingBook.borrowingDate}"></td>
+          <td th:text="${borrowingBook.deadlineReturn}">余华</td>
+          <td>
+            <scan th:text="${borrowingBook.timeRemaining}" th:if="${borrowingBook.status}==0"></scan>
+            <scan th:if="${borrowingBook.status}==1">书籍已归还</scan>
+            <scan th:text="'以逾期：'+${borrowingBook.timeRemaining}" th:if="${borrowingBook.status}==2" style="color: red"></scan>
+          </td>
+          <td>
+            <scan th:if="${borrowingBook.status}==0">借阅中</scan>
+            <scan th:if="${borrowingBook.status}==1">以归还</scan>
+            <scan th:if="${borrowingBook.status}==2" style="color: red">以逾期</scan>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <img src="static/img/搜索结果.png"   th:if="${borrowingBooks.total==0}">
+      <div class="footer-right" th:if="${borrowingBooks.total!=0}">
+        [(${pageInfo})]
+      </div>
+    </div>
+  </div>
+
+</div>
+<div th:include="common/tail::tailer"></div>
+</body>
+<script>
+  new Vue({
+    el:"#p101",
+    data:{
+
+    },
+    methods:{
+      formRedirect1:function (id){
+        event.preventDefault();
+        let elementById = document.getElementById(id);
+        elementById.submit();
+      }
+    }
+  })
+</script>
+</html>

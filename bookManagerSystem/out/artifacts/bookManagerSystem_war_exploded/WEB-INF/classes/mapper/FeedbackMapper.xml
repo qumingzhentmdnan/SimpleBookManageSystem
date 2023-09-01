@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--映射文件namespace与接口全类名一致-->
+<!--映射文件SQL的Id与接口的方法名一致-->
+<mapper namespace="com.fjut.mapper.FeedbackMapper">
+    <select id="getAllFeedback" resultType="Feedback">
+        SELECT username,id,`type`,`date`,feedback_info,`status`,response_info
+        FROM feedback,`user` WHERE feedback.`user_id`=USER.`user_id` ORDER BY date desc
+    </select>
+
+    <update id="updateResInfo">
+        update  feedback SET status = 1,response_info =#{responseInfo} ,response_time=#{responseTime} WHERE id=#{respId};
+    </update>
+
+    <select id="queryFeedbackByKey" resultType="Feedback">
+        SELECT username,id,`type`,`date`,feedback_info,`status`,response_info,response_time
+        FROM feedback,`user`
+        <where>
+                AND feedback.`user_id`=`USER`.`user_id`
+            <if test="feedbackInfo!=null">
+                AND feedback_info like concat('%',#{feedbackInfo},'%')<!--也可以使用${}，但是可能发生SQL注入-->
+            </if>
+            <if test="userId!=null">
+                AND feedback.`user_id`=#{userId}
+            </if>
+            <if test="status!=null">
+                AND status=#{status}
+            </if>
+        </where>
+        ORDER BY date desc
+    </select>
+
+    <insert id="submitFeedback">
+        insert into feedback values (#{id},#{userId},#{type},#{date},#{feedbackInfo},#{status},#{responseInfo},#{responseTime},#{email})
+    </insert>
+</mapper>

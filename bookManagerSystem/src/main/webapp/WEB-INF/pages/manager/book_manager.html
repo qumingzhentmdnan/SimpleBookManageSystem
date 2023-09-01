@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>图书管理</title>
+  <base th:href="@{/}">
+  <link rel="stylesheet" href="static/css/minireset.css" />
+  <link rel="stylesheet" href="static/css/common.css" />
+  <link rel="stylesheet" href="static/css/cart.css" />
+  <link rel="stylesheet" href="static/css/bookManger.css" />
+  <link rel="stylesheet" href="static/css/iconfont.css" />
+  <link rel="stylesheet" href="static/css/index.css" />
+  <link rel="stylesheet" href="static/css/swiper.min.css" />
+  <link rel="stylesheet" href="static/css/set.css">
+  <script src="static/script/vue.js"></script>
+</head>
+<body>
+<div th:include="common/head::header"></div>
+
+<div id="p101">
+<div class="header w">
+  <div id="login_header">
+    <img class="logo_img" alt="" style="width: 320px;" src="static/img/校徽.png" />
+  </div>
+  <div class="header-nav">
+    <h1 style="font-size :50px ;font-family:'宋体'">图 书 管 理</h1><br>
+  </div>
+
+    <form th:action="@{/book/1}" method="get">
+      <div class="header-search">
+        <input  type="text" name="bookInfo"/>
+        <select name="searchType" style="height: 50px ;width: 50px;">
+          <option value="name"  selected>书名搜索</option>
+          <option value="isbn" >ISBN搜索</option>
+          <option value="author" >作者搜索</option>
+        </select>
+        <button class="iconfont icon-search"></button>
+      </div>
+    </form>
+</div>
+
+<div class="list" >
+  <div class="w">
+    <div class="add" th:if="${session.root==1}">
+      <a th:href="@{/toBookAdd(num=${num})}" >添加图书</a>
+    </div>
+
+    <table >
+      <thead>
+      <tr>
+        <th>封面</th>
+        <th>书名</th>
+        <th>作者</th>
+        <th>已借阅本数</th>
+        <th>剩余本数</th>
+        <th>ISBN码</th>
+        <th th:if="${session.root==0}">索书号</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="book: ${books}">
+        <td>
+          <img th:src="${book.picture}" alt="" />
+        </td>
+        <td th:text="${book.name}">活着</td>
+        <td th:text="${book.author}">
+          100.00
+        </td>
+        <td th:text="${book.lending}">余华</td>
+        <td th:text="${book.remain}">200</td>
+        <td th:text="${book.isbn}">400</td>
+
+        <!--restful风格，通过超链接调用js函数，转而调用表单提交操作的类型。
+        但是js代码中不同区块的id不能相同，所以使用书本的id作为Thymeleaf渲染出的表格id，
+        因为存在修改和删除两个，所以以负的书本id作为其表格id
+        麻烦，不如直接超链接提交-->
+
+        <!--th:@click="|formRedirect1(${book.bookId})|" 将Thymeleaf存放域中数据作为参数传递给vue-->
+        <td th:if="${session.root==1}">
+          <a th:href="@{/toBookUpdate(id=${book.bookId},num=${num},url='toBookManage')}">修改</a>
+          <a href="#"   th:@click="|formRedirect1(${book.bookId})|">删除</a>
+          <form th:id="${book.bookId}" th:action="@{/book(id=${book.bookId})}" method="post">
+            <input type="hidden" name="_method" value="DELETE">
+            <input type="hidden" name="num" th:value="${num}">
+          </form>
+        </td>
+
+        <td th:if="${session.root==0}" th:text="'索书号'+${book.address}"></td>
+
+
+      </tr>
+      </tbody>
+    </table>
+    <img src="static/img/搜索结果.png"   th:if="${books.total==0}">
+    <div class="footer-right" th:if="${books.total!=0}">
+      [(${pageInfo})]
+    </div>
+  </div>
+</div>
+
+</div>
+  <div th:include="common/tail::tailer"></div>
+</body>
+<script>
+  new Vue({
+    el:"#p101",
+    data:{
+
+    },
+    methods:{
+      formRedirect1:function (id){
+        event.preventDefault();
+        let elementById = document.getElementById(id);
+        elementById.submit();
+      }
+    }
+  })
+</script>
+</html>

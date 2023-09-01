@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--映射文件namespace与接口全类名一致-->
+<!--映射文件SQL的Id与接口的方法名一致-->
+<mapper namespace="com.fjut.mapper.BookMapper">
+
+    <select id="queryBookById" resultType="Book">
+        select * from book where book_id=#{param0}
+    </select>
+    <delete id="delBookById">
+        DELETE FROM book WHERE book_id=#{param0};
+    </delete>
+
+    <select id="queryBookByKeyword" resultType="Book">
+        select * from book
+                <where>
+                    <choose>
+                        <when test="name!=null">
+                            name like concat('%',#{name},'%')<!--也可以使用${}，但是可能发生SQL注入-->
+                        </when>
+                        <when test="author!=null">
+                            author=#{author}
+                        </when>
+                        <when test="isbn!=null">
+                            isbn=#{isbn}
+                        </when>
+                    </choose>
+                </where>
+    </select>
+
+    <insert id="addBook">
+        insert into book values(0,#{name},#{author},#{lending},#{remain},
+                                coalesce(#{picture}, 'static/uploads/默认封面.png')
+                                   ,#{isbn},#{address})
+    </insert>
+
+    <update id="updateBook">
+        UPDATE book SET
+                        name = #{name},author= #{author},lending =#{lending},remain =#{remain},
+                        <if test="picture!=null">
+                            picture=#{picture},
+                        </if>
+                        isbn =#{isbn},address=#{address}
+                    WHERE book_id=#{bookId}
+    </update>
+
+
+
+    <select id="queryBorrowingBookByKey" resultType="BorrowingBook">
+        SELECT order_id,user_id,NAME bookname,lending_books.book_id,sequence,borrowing_date,deadline_return,STATUS
+            FROM lending_books,book
+        <where>
+            lending_books.`user_id`=#{userId} AND lending_books.`book_id`=book.`book_id`
+            <choose>
+                <when test="name!=null">
+                    AND  name like concat('%',#{name},'%')<!--也可以使用${}，但是可能发生SQL注入-->
+                </when>
+                <when test="sequence!=null">
+                    AND sequence=#{sequence}
+                </when>
+                <when test="status!=null">
+                    AND  status!=1
+                </when>
+            </choose>
+        </where>
+    </select>
+</mapper>

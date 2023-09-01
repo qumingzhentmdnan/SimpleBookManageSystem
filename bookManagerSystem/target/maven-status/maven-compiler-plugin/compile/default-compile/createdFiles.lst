@@ -1,0 +1,15 @@
+com\fjut\mapper\UserMapper.class
+com\fjut\util\PageUtil.class
+com\fjut\service\UserService.class
+com\fjut\controller\FeedbackServlet.class
+com\fjut\mapper\FeedbackMapper.class
+com\fjut\controller\UserServlet.class
+com\fjut\controller\BookServlet.class
+com\fjut\pojo\BorrowingBook.class
+com\fjut\pojo\User.class
+com\fjut\pojo\Feedback.class
+com\fjut\mapper\BookMapper.class
+com\fjut\pojo\Book.class
+com\fjut\service\FeedbackService.class
+com\fjut\service\BookService.class
+com\fjut\Listener\ContextFinalizer.class

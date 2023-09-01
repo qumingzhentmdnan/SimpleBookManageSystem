@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <base th:href="@{/}">
+  <title>用户反馈页面</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 400px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    label {
+      margin-bottom: 10px;
+    }
+
+    select, input[type="email"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+
+    .word-count {
+      color: #f00;
+    }
+    input[type="submit"] {
+      width: 80px;
+      height: 30px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+  <script src="static/script/vue.js"></script>
+</head>
+<body>
+<form id="p101" th:action="@{/SubmitFeedback}" method="post">
+  <label for="feedbackType">反馈类型：</label>
+  <select name="feedbackType" id="feedbackType">
+    <option value="1">系统信息错误</option>
+    <option value="2">书籍信息错误</option>
+    <option value="2">其他错误</option>
+  </select><br>
+
+  <label for="email">邮箱账号：</label>
+  <input type="email" name="email" id="email" v-model:value="emailReg"><br>
+
+  <label for="feedback">反馈信息：<scan id="wordCount"  class="word-count" style="align-items: center">字数：0/100</scan></label><br>
+  <textarea name="feedbackInfo" id="feedback" rows="4" cols="50" maxlength="100" v-model:value="textarea" @input="changeNum"></textarea><br>
+
+  <input type="submit" value="提交" @click="checkALl">
+</form>
+
+
+
+<script>
+
+  new Vue({
+    el:"#p101",
+    data:{
+      emailReg:"",
+      textarea:""
+    },
+    methods:{
+      checkEmail:function (){
+        var emailReg=/^[a-zA-Z0-9_\.-]+@([a-zA-Z0-9-]+[\.]{1})+[a-zA-Z]+$/;
+        if(emailReg.test(this.emailReg)){
+          return true;
+        }else{
+          this.errEmail="";
+          return false;
+        }
+      },
+      checkALl:function (){
+        if(this.textarea==""||!this.checkEmail()){
+          if(this.textarea==""){
+            alert("反馈信息不能为空")
+          }else{
+            alert("邮箱格式错误")
+          }
+          event.preventDefault();
+        }else{
+          alert("已成功提交，将尽快为你处理")
+        }
+      },
+      changeNum:function (){
+        const wordCount = this.textarea.length;
+        const wordCountDiv = document.getElementById('wordCount');
+        wordCountDiv.textContent = '字数：' + wordCount+'/100';
+      }
+    }
+  })
+</script>
+</body>
+</html>

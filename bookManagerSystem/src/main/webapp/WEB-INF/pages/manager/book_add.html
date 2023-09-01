@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <base th:href="@{/}">
+  <link rel="stylesheet" href="static/css/minireset.css" />
+  <link rel="stylesheet" href="static/css/common.css" />
+  <link rel="stylesheet" href="static/css/style.css" />
+  <link rel="stylesheet" href="static/css/cart.css" />
+  <link rel="stylesheet" href="static/css/bookManger.css" />
+  <link rel="stylesheet" href="static/css/register.css"/>
+  <link rel="stylesheet" href="static/css/book_edit.css" />
+  <link rel="stylesheet" href="static/css/iconfont.css" />
+  <link rel="stylesheet" href="static/css/index.css" />
+  <link rel="stylesheet" href="static/css/swiper.min.css" />
+  <link rel="stylesheet" href="static/css/set.css">
+
+  <style>
+    body{
+      background:url("static/img/背景2.png") no-repeat center center fixed;
+      background-size:cover;
+    }
+  </style>
+  <script src="static/script/vue.js"></script>
+</head>
+<body>
+
+
+<div th:include="common/head::header"></div>
+
+  <div class="w">
+    <div class="header-left">
+      <img class="logo_img" alt="" style="width: 320px; height: 79.7px" src="static/img/校徽.png" />
+      <div class="header-nav">
+        <h1 style="font-size :50px ;font-family:'宋体';text-align: center" >图 书 添 加</h1><br>
+      </div>
+    </div>
+  </div>
+
+
+
+
+<div class="login_banner" id="p101">
+  <div class="register_form">
+    <form th:action="@{/book(num=${num})}" method="post" enctype="multipart/form-data">
+      <div class="form-item">
+        <div>
+          <label>封面:</label>
+          <input type="file"  id="file" name="uploadFile" onchange="checkFileSize()"><br>
+        </div>
+      </div>
+
+      <div class="form-item">
+        <div>
+          <label>书名:</label>
+          <input type="text" name="name" v-model:value="name"  placeholder="请输入书名" />
+        </div>
+      </div>
+      <div class="form-item">
+        <div>
+          <label>作者:</label>
+          <input type="text" name="author" v-model:value="author" placeholder="请输入作者" />
+        </div>
+
+      </div>
+      <div class="form-item">
+        <div>
+          <label>已借:</label>
+          <input  type="number" name="lending" v-model:value="lending" placeholder="请输入已借数量" />
+        </div>
+
+      </div>
+      <div class="form-item">
+        <div>
+          <label>剩余:</label>
+          <input type="number" name="remain" v-model:value="remain" placeholder="请输入剩余数量" />
+        </div>
+
+      </div>
+      <div class="form-item">
+        <div>
+          <label>ISBN:</label>
+          <input type="text" name="isbn" v-model:value="isbn" placeholder="请输入isbn码" />
+        </div>
+
+      </div>
+
+      <div class="form-item">
+        <div>
+          <label>索书号:</label>
+          <input type="text" name="address" v-model:value="address" placeholder="请输入索书号" />
+        </div>
+
+      </div>
+      <div>
+        <button class="btn" @click="checkAll">提交</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="bottom">
+  Copyright © FuJian University of Technology 闽ICP备10022194号-1 福建省福州市闽侯县上街镇学府南路69号 350118
+</div>
+</body>
+<script>
+  function checkFileSize() {
+    var fileInput = document.getElementById('file');
+    var fileSize = fileInput.files[0].size; // 文件大小，单位为字节
+
+    // 将字节转换为兆字节 (MB)
+    var fileSizeInMB = fileSize / (1024 * 1024);
+
+    // 设置文件大小限制为3MB
+    var maxSizeInMB = 3;
+
+    if (fileSizeInMB > maxSizeInMB) {
+      alert("限制封面大小不超过3MB")
+      fileInput.value = ''; //清空文件输入字段，防止提交
+    }
+  }
+
+  new Vue({
+    el:"#p101",
+    data:{
+      name:"",
+      author:"",
+      lending:"",
+      remain:"",
+      isbn:"",
+      address:""
+    },
+    methods:{
+      checkAll:function (){
+        if(this.name==""||this.author==""||this.lending==""||this.remain==""||this.isbn==""||this.address==""){
+          alert("书籍信息填写不完全！！！")
+          event.preventDefault()
+        }
+      }
+    }
+  })
+</script>
+</html>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--映射文件namespace与接口全类名一致-->
+<!--映射文件SQL的Id与接口的方法名一致-->
+<mapper namespace="com.fjut.mapper.UserMapper">
+    <select id="queryUserByName" resultType="User">
+        SELECT *FROM USER WHERE username=#{username}
+    </select>
+
+    <insert id="addUser" >
+        INSERT INTO USER VALUES(0,#{username},#{password},#{allowBorrowing},#{email})
+    </insert>
+
+    <select id="queryUser" resultType="User">
+        SELECT *FROM USER WHERE username=#{username} AND password=#{password}
+    </select>
+</mapper>

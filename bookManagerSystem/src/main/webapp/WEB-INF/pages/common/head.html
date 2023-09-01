@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <base th:href="@{/}">
+    <link rel="stylesheet" href="static/css/minireset.css" />
+    <link rel="stylesheet" href="static/css/common.css" />
+    <link rel="stylesheet" href="static/css/cart.css" />
+    <link rel="stylesheet" href="static/css/bookManger.css" />
+
+</head>
+<body>
+<div th:fragment="header">
+    <div class="topbar">
+        <div class="w">
+            <div class="topbar-right" th:if="${session.root==0}">
+                <a href="toBorrowingBook/1" class="register" target="_blank">已借阅书籍</a>
+                <a href="toFeedbackPage/1" class="register" target="_blank">问题反馈</a>
+                <a href="#" id="settings-btn2" class="register" onclick="prevent()">设置</a>
+            </div >
+
+            <div class="topbar-right" th:if="${session.root==1}">
+                <a href="toBookManage/1" class="register" target="_blank">图书管理</a>
+                <a href="toHandleFeedbackPage/1" class="register" target="_blank">用户反馈</a>
+                <a href="BookDataCenter" class="register" target="_blank">国家图书数据中心</a>
+                <a href="#" id="settings-btn1" class="register" onclick="prevent()">设置</a>
+            </div>
+            <div class="menu">
+                <a href="#" style="font-size: 5px;align-items: center" onclick="clearCache()">清除缓存</a>
+                <a th:href="@{/quit}" style="font-size: 5px;align-items: center" onclick="toLogin()">退出登录</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        var settingsBtn1 = document.getElementById("settings-btn1");
+        if(settingsBtn1!=null){
+            settingsBtn1.addEventListener("mouseenter", function() {
+                menu.style.display = "block";
+            });
+        }
+
+        var settingsBtn2 = document.getElementById("settings-btn2");
+        if(settingsBtn2!=null){
+            settingsBtn2.addEventListener("mouseenter", function() {
+                menu.style.display = "block";
+            });
+        }
+
+        var menu = document.querySelector(".menu");
+        menu.addEventListener("mouseleave", function() {
+            menu.style.display = "none";
+        });
+
+        function prevent(){
+            event.preventDefault();
+        }
+9
+        function clearCache(){
+            event.preventDefault();
+            const lastClick = localStorage.getItem('lastClick');
+            const currentTime = new Date().getTime();
+
+            if(lastClick&&currentTime-lastClick<60*1000){
+                alert("暂无更多垃圾可以清理")
+            }else{
+                localStorage.setItem('lastClick', currentTime);
+                appendLoadDom('正在清除缓存...');
+                // 生成一个随机数
+                let rand = parseInt(Math.random() * (3)+1);
+                // 进行清除缓存
+                setTimeout(() => {
+                    alert('清除缓存成功！');
+                    window.document.querySelector('.loadBox').remove();
+                },rand*1000)
+            }
+        }
+
+        function appendLoadDom(text){
+            let loadDom = document.createElement('div');
+            loadDom.innerHTML = text;
+            loadDom.setAttribute(
+                'style',
+                'position:fixed; top: 0; left: 0; bottom: 0; right: 0; z-index:9999; background:rgba(0,0,0,0.7); text-align:center; line-height:50px; color:#fff;'
+            );
+            loadDom.setAttribute('class','loadBox')
+            window.document.body.appendChild(loadDom)
+        }
+
+        function toLogin(){
+           alert("已安全退出")
+        }
+    </script>
+</div>
+</body>
+</html>

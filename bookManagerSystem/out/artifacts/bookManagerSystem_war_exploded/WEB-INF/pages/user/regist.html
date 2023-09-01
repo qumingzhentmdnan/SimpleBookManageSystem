@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>图书管理系统注册页面</title>
+    <base th:href="@{/}">
+    <link type="text/css" rel="stylesheet" href="static/css/style.css" />
+    <link rel="stylesheet" href="static/css/register.css" />
+    <style type="text/css">
+      .login_form {
+        height: 420px;
+        margin-top: 25px;
+      }
+       body{
+         background:url("static/img/背景3.png") no-repeat center center fixed;
+         background-size:cover;
+       }
+    </style>
+    <script src="static/script/vue.js"></script>
+    <script src="static/script/axios.js"></script>
+  </head>
+  <body>
+    <noscript >
+      <div style="text-align: center; font-size: 50px; color: red;">请启用JavaScript以查看此网站的完整功能</div>
+    </noscript>
+    <div id="login_header">
+      <img class="logo_img" alt="" style="width: 320px;" src="static/img/校徽.png" />
+    </div>
+
+    <div class="login_banner">
+      <div class="register_form">
+        <h1>图书管理系统注册</h1>
+        <div id="p101">
+          <form action="addUser" method="post">
+            <div class="form-item">
+              <div>
+                <label>用户名称:</label>
+                <input type="text" name="username" v-model:value="username" placeholder="请输入用户名" @blur="checkUsername"/>
+              </div>
+              <span class="errMess">{{errUsername}}</span>
+            </div>
+            <div class="form-item">
+              <div>
+                <label>用户密码:</label>
+                <input type="password" name="password" v-model:value="password" placeholder="请输入密码" @blur="checkPassword"/>
+              </div>
+              <span class="errMess">{{errPassword}}</span>
+            </div>
+            <div class="form-item">
+              <div>
+                <label>确认密码:</label>
+                <input type="password" name="verifyPassword" v-model:value="verifyPassword" placeholder="请输入确认密码" @blur="checkVerifyPassword"/>
+              </div>
+              <span class="errMess">{{errVerifyPassword}}</span>
+            </div>
+            <div class="form-item">
+              <div>
+                <label>用户邮箱:</label>
+                <input type="text" name="email" v-model:value="email" placeholder="请输入邮箱" @blur="checkEmail"/>
+              </div>
+              <span class="errMess">{{errEmail}}</span>
+            </div>
+
+            <div class="form-item">
+              <div>
+                <label>验证码:</label>
+                <div class="verify">
+                  <input type="text" name="verificationCode" v-model:value="verificationCode" placeholder="请输入验证码" @blur="checkVerificationCode"/>
+                  <img :src="codeSrc" alt="" width="120px" height="42px" @click="updateCode"/>
+                </div>
+              </div>
+              <span class="errMess">{{errVerificationCode}}</span>
+            </div>
+            <button class="btn" @click="checkAll()">注册</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="bottom">
+      <span style="color: #f0f0f0">
+        Copyright © FuJian University of Technology 闽ICP备10022194号-1 福建省福州市闽侯县上街镇学府南路69号 350118
+      </span>
+    </div>
+  </body>
+  <script>
+    new Vue({
+      el:"#p101",
+      data:{
+        username:"",
+        password:"",
+        verifyPassword:"",
+        email:"",
+        verificationCode:"",
+
+        codeSrc:"KaptchaServlet",
+
+        usernameFlag:"",
+        verificationCodeFlag:"",
+
+        errUsername:"用户名应为6~16位数字和字母组成",
+        errPassword:"密码应为6-10位，且包含大小写字母、数字",
+        errVerifyPassword:"密码两次输入不一致",
+        errEmail:"请输入正确的邮箱格式",
+        errVerificationCode:"请输入正确的验证码",
+      },
+      methods:{
+        checkUsername:function (){
+          var usernameReg=/^[a-zA-Z0-9]{6,16}$/;
+          if(usernameReg.test(this.username)){
+            axios({
+              method:"post",
+              url:"checkUsername",
+              params:{
+                username:this.username,
+              }
+            }).then(response=>{
+              this.errUsername=response.data
+            });
+            if(this.errUsername!="用户名重复"){
+              this.errUsername="";
+              return true;
+            }
+            return false;
+          }else{
+            this.errUsername="用户名应为6~16位数字和字母组成";
+            return false;
+          }
+        },
+
+        checkPassword:function (){
+          var passwordReg=/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[A-Za-z0-9]{6,10}$/;
+          this.checkVerifyPassword();
+          if(passwordReg.test(this.password)){
+            this.errPassword="";
+            return true;
+          }else{
+            this.errPassword="密码应为6-10位，且包含大小写字母、数字"
+            return false;
+          }
+        },
+        checkEmail:function (){
+          var emailReg=/^[a-zA-Z0-9_\.-]+@([a-zA-Z0-9-]+[\.]{1})+[a-zA-Z]+$/;
+          if(emailReg.test(this.email)){
+            this.errEmail="";
+            return true;
+          }else{
+            this.errEmail="请输入正确的邮箱格式";
+            return false;
+          }
+        },
+        checkVerifyPassword:function (){
+          if(this.password==this.verifyPassword&&this.password!=""){
+            this.errVerifyPassword="";
+            return true;
+          }else{
+            this.errVerifyPassword="密码两次输入不一致";
+            return false;
+          }
+        },
+        checkAll:function (){
+          if(this.checkEmail()&&this.checkUsername()&&this.checkPassword()&&this.checkVerifyPassword()&&this.checkVerificationCode()){
+            alert("注册成功！！！请登录");
+          }else{
+            alert("注册信息有误！！！请仔细检查");
+            event.preventDefault();
+          }
+        },
+        updateCode:function (){
+          this.codeSrc=this.codeSrc+"?aa="+new Date();
+        },
+        checkVerificationCode:function (){
+          axios({
+            method: "post",
+            url:"checkerrVerificationCode",
+            params: {verificationCode:this.verificationCode}
+          }).then(response=>{
+            this.errVerificationCode=response.data
+          })
+          return this.errVerificationCode=="";
+        }
+      }
+      }
+    )
+  </script>
+</html>

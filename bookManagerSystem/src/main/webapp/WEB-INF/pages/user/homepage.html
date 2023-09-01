@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>首页</title>
+    <base th:href="@{/}">
+    <link rel="stylesheet" href="static/css/minireset.css" />
+    <link rel="stylesheet" href="static/css/common.css" />
+    <link rel="stylesheet" href="static/css/iconfont.css" />
+    <link rel="stylesheet" href="static/css/index.css" />
+    <link rel="stylesheet" href="static/css/swiper.min.css" />
+    <link rel="stylesheet" href="static/css/set.css">
+  </head>
+  <body>
+
+  <div th:include="common/head::header"></div>
+      <div class="header w">
+        <div id="login_header">
+          <img class="logo_img" alt="" style="width: 320px;" src="static/img/校徽.png" />
+        </div>
+        <div class="header-nav">
+            <h1 style="font-size :50px ;font-family:'宋体'">图 书 推 荐</h1>
+        </div>
+        <form th:action="@{/book/1}" method="get" target="_blank">
+          <div class="header-search">
+            <input  type="text" name="bookInfo"/>
+            <select name="searchType" style="height: 50px ;width: 50px;">
+              <option value="name"  selected>书名搜索</option>
+              <option value="isbn" >ISBN搜索</option>
+              <option value="author" >作者搜索</option>
+            </select>
+            <button class="iconfont icon-search"></button>
+          </div>
+        </form>
+      </div>
+      <div class="banner w clearfix">
+        <div class="banner-left">
+          <ul>
+            <li>
+              <a href="toBookManage/1">
+                <span>文学 鉴赏</span>
+                <i class="iconfont icon-jiantou"></i
+              ></a>
+            </li>
+            <li>
+              <a href="toBookManage/1">
+                <span>社科 研究</span>
+                <i class="iconfont icon-jiantou"></i
+              ></a>
+            </li>
+            <li>
+              <a href="toBookManage/1">
+                <span>少儿 培训</span>
+                <i class="iconfont icon-jiantou"></i
+              ></a>
+            </li>
+            <li>
+              <a href="toBookManage/1">
+                <span>艺术 赏析</span>
+                <i class="iconfont icon-jiantou"></i
+              ></a>
+            </li>
+            <li>
+              <a href="toBookManage/1">
+                <span>生活 周边</span>
+                <i class="iconfont icon-jiantou"></i
+              ></a>
+            </li>
+            <li>
+              <a href="toBookManage/1">
+                <span>文教 科技</span>
+                <i class="iconfont icon-jiantou"></i
+              ></a>
+            </li>
+            <li>
+              <a href="toBookManage/1">
+                <span>热销 畅读</span>
+                <i class="iconfont icon-jiantou"></i
+              ></a>
+            </li>
+          </ul>
+        </div>
+        <div class="banner-right">
+          <img src="static/img/书籍.png" />
+        </div>
+      </div>
+      <div class="books-list ">
+        <div class="w">
+          <div class="list">
+            <div class="list-header">
+              <div class="title">图书列表</div>
+              <!--为什么加个标签或方外面就是竖着换行排-->
+              [(${pageInfo})]
+            </div>
+            <div class="list-content">
+              <div class="list-item" th:each="book:${books}">
+                <img th:src="${book.picture}" alt="">
+                <p>书名:<span th:text="${book.name}"></span></p>
+                <p>作者:<span th:text="${book.author}"></span></p>
+                <p>已借阅数量:<span th:text="${book.lending}"></span></p>
+                <p>剩余数量:<span th:text="${book.remain}"></span></p>
+                <p>ISBN:<span th:text="${book.isbn}"></span></p>
+                <p th:if="${session.root==0}" th:text="'索书号：'+${book.address}"></p>
+                <a th:href="@{/toBookUpdate(id=${book.bookId},num=${num},url='toHomepage')}" th:if="${session.root==1}"><button>修改信息</button></a>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--<span align="center" th:utext="${pageInfo}"></span>-->
+
+  <div th:include="common/tail::tailer"></div>
+
+    <script src="static/script/swiper.min.js"></script>
+    <script>
+      var swiper = new Swiper('.swiper-container', {
+        autoplay: true,
+        pagination: {
+          el: '.swiper-pagination',
+          dynamicBullets: true
+        },
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev'
+        }
+      })
+    </script>
+  </body>
+</html>

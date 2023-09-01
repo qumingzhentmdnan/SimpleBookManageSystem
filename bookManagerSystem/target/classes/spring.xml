@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mybtis-spring="http://mybatis.org/schema/mybatis-spring"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+https://www.springframework.org/schema/context/spring-context.xsd
+ http://www.springframework.org/schema/tx
+ http://www.springframework.org/schema/tx/spring-tx.xsd
+ http://mybatis.org/schema/mybatis-spring
+ http://mybatis.org/schema/mybatis-spring.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+    <!--扫描com.fjut下，除Controller类型的包-->
+    <context:component-scan base-package="com.fjut">
+        <context:exclude-filter type="annotation"
+                                expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!--    加载外部属性文件-->
+    <context:property-placeholder location="classpath:druid.properties"></context:property-placeholder>
+
+    <!--    装配数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${driverClassName}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${name}"/>
+        <property name="password" value="${password}"/>
+    </bean>
+
+    <!--    装配事务管理器-->
+    <bean id="transactionManager" 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!-- 开启事务注解支持
+       transaction-manager默认值：transactionManager-->
+    <tx:annotation-driven  transaction-manager="transactionManager"></tx:annotation-driven>
+    <!-- 配置用于创建SqlSessionFactory的工厂bean -->
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 设置MyBatis核心配置文件的路径-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"></property>
+        <!-- 设置数据源 -->
+        <property name="dataSource" ref="dataSource"></property>
+        <!-- 设置类型别名所对应的包 -->
+        <!--为指定包下所有的类定义别名,默认将类名作为别名，不区分大小写【推荐使用小写字母】-->
+        <property name="typeAliasesPackage" value="com.fjut.pojo"></property>
+        <!--设置映射文件的路径-->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"></property>
+    </bean>
+
+    <!--    开启AspectJ注解支持-->
+<!--    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>-->
+
+    <!--配置mapper接口的扫描配置由mybatis-spring提供，可以将指定包下所有的mapper接口创建动态代理并将这些动态代理作为IOC容器的bean管理-->
+    <!--<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.fjut.mapper"></property>
+    </bean>-->
+    <!--    或者-->
+        <mybtis-spring:scan base-package="com.fjut.mapper"></mybtis-spring:scan>
+</beans>
